@@ -14,37 +14,22 @@ class LSTM(nn.Module):
 
 
 class MHA(nn.Module):
-    def __init__(self, channels, num_heads=8):
-        super().__init__()
-        self.h = num_heads
-        self.d = channels // num_heads
-        # scale factor
-        self.scale = self.d ** -0.5
-
-        self.conv_qkv = nn.Conv2d(in_channels=channels, out_channels=3 * channels, kernel_size=(1, 1), stride=(1, 1))
-        self.softmax = nn.Softmax(dim=-1)
+    def __init__(self, embed_dim, num_heads=8):
+        super(MHA, self).__init__()
+        self.self_attn = nn.MultiheadAttention(batch_first=True, embed_dim=embed_dim, num_heads=num_heads)
 
     def forward(self, x):
-        # [b, c, p, t]
-        qkv = self.conv_qkv(x)  # [b, c, p, t] -> [b, 3*c, p, t]
-        q, k, v = rearrange(qkv, 'b (qkv h d) p t -> qkv b h d p t', qkv=3, h=self.h, d=self.d)
-        q = rearrange(q, 'b h d p t -> b h p (d t)')
-        k = rearrange(k, 'b h d p t -> b h (d t) p')
-        v = rearrange(v, 'b h d p t -> b h p (d t)')
-
-        dots = torch.matmul(q, k) * self.scale  # [b, h, p, p]
-        attn = self.softmax(dots)
-
-        out = torch.matmul(attn, v)  # [b, h, p, (dt)]
-        out = rearrange(out, 'b h p (d t) -> b (h d) p t', h=self.h, d=self.d)
-        return out
+        # [b, c, t]
+        # Multi-head self-attention
+        attention_output, _ = self.self_attn(x[0], x[0], x[0])
+        return attention_output
 
 
 class TFE(nn.Module):
     def __init__(self, input_size, hidden_size, num_heads, dropout=0.5):
         super().__init__()
         self.lstm = LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout)
-        self.mha = MHA(channels=1, num_heads=num_heads)
+        self.mha = MHA(embed_dim=16, num_heads=num_heads)
 
     def forward(self, x):
         x = self.lstm(x)
