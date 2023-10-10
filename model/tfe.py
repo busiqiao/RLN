@@ -6,7 +6,8 @@ import torch
 class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, dropout, bias=False):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, num_layers=1, dropout=dropout, bias=bias)
+        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout, bias=bias,
+                            batch_first=True)
 
     def forward(self, x):
         x = self.lstm(x)
@@ -21,7 +22,7 @@ class MHA(nn.Module):
     def forward(self, x):
         # [b, c, t]
         # Multi-head self-attention
-        attention_output, _ = self.self_attn(x[0], x[0], x[0])
+        attention_output, _ = self.self_attn(x, x, x)
         return attention_output
 
 
@@ -32,6 +33,14 @@ class TFE(nn.Module):
         self.mha = MHA(embed_dim=16, num_heads=num_heads)
 
     def forward(self, x):
-        x = self.lstm(x)
-        x = self.mha(x)
+        x, (h_0, c_0) = self.lstm(x)
+        h_0 = h_0.permute(1, 0, 2)
+        # h_0 = h_0.permute(1, 2, 0)
+        x = self.mha(h_0)
         return x
+
+
+if __name__ == '__main__':
+    model = TFE(input_size=1, hidden_size=16, num_heads=1, dropout=0.5)
+    data = torch.randn((3, 32, 1))  # B,L,C
+    model(data)

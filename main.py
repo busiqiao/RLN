@@ -5,7 +5,6 @@ from model.RLN import RLN
 from model.utils import train, test
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
-CUDA_LAUNCH_BLOCKING = 1
 
 epochs = 35
 batch_size = 64
@@ -14,7 +13,7 @@ num_class = 6
 if __name__ == '__main__':
     dataPath = 'H:\\EEG\\EEGDATA'
 
-    for i in range(0, 2):
+    for i in range(0, 10):
         dataset = EEGDataset(dataPath + '\\' + 'S' + str(i + 1) + '.mat')
         train_size = int(0.9 * len(dataset))
         test_size = int(len(dataset)) - train_size
