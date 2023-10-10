@@ -42,25 +42,39 @@ if __name__ == '__main__':
         for epoch in range(epochs):
             losses = []
             accuracy = []
-            loop = tqdm(train_loader, total=len(train_loader))
+            train_loop = tqdm(train_loader, total=len(train_loader))
 
-            for step, (x, y) in enumerate(loop):
-                if batch_size == 64 and step == 72:
+            f = 0
+            for (x, y) in train_loop:
+                f += 1
+                if batch_size == 64 and f == 73:
                     continue
                 x = x.cuda()
                 y = y.cuda()
                 loss, y_ = train(model=model, optimizer=optimizer, x=x, y=y)
                 corrects = (torch.argmax(y_, dim=1).data == y.data)
                 acc = corrects.cpu().int().sum().numpy() / batch_size
+                losses.append(loss)
+                accuracy.append(acc)
 
-                loop.set_description(f'Epoch [{epoch+1}/{epochs}]')
-                loop.set_postfix(loss=loss.item(), acc=acc)
+                train_loop.set_description(f'Epoch [{epoch + 1}/{epochs}]')
+                train_loop.set_postfix(loss=loss.item(), acc=acc)
 
+            test_loop = tqdm(test_loader, total=len(test_loader))
+            sum_acc, flag = 0, 0
+            for (xx, yy) in test_loop:
+                if batch_size == 64 and flag == 8:  # 跳过第81个step的原因是kfold分配的验证集在batich_size=64时，
+                    continue  # 第81个step无法填满，导致除以精度异常甚至报错
+                val_loss, val_acc = test(model=model, x=xx, y=yy)
+                val_acc = val_acc / batch_size
+                sum_acc += val_acc
+                losses.append(val_loss)
+                accuracy.append(val_acc)
+                flag += 1
 
-
-
-
-
-
-
+                test_loop.set_description(f'   Test   ')
+                test_loop.set_postfix(loss=val_loss.item(), acc=val_acc)
+                # print('test step:{}/{} loss={:.5f} acc={:.3f}'.format(step, int(test_size / batch_size), val_loss,
+                #                                                       val_acc))
+            print('平均准确率：{}'.format(sum_acc / flag))
 

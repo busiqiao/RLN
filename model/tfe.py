@@ -35,7 +35,6 @@ class TFE(nn.Module):
     def forward(self, x):
         x, (h_0, c_0) = self.lstm(x)
         h_0 = h_0.permute(1, 0, 2)
-        # h_0 = h_0.permute(1, 2, 0)
         x = self.mha(h_0)
         return x
 

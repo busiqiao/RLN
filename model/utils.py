@@ -18,7 +18,7 @@ def test(model, x, y):
     y = y.cuda()
     model.eval()
     y_ = model(x)
-    loss = torch.nn.functional.cross_entropy(y_, y)
+    loss = torch.nn.functional.cross_entropy(y_, y.long())
     corrects = (torch.argmax(y_, dim=1).data == y.data)
     acc = corrects.cpu().int().sum().numpy()
     return loss, acc
