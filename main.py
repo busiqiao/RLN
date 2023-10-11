@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 losses.append(loss)
                 accuracy.append(acc)
 
-                train_loop.set_description(f'Epoch [{epoch + 1}/{epochs}]')
+                train_loop.set_description(f'Epoch [{epoch + 1}/{epochs}] - Train')
                 train_loop.set_postfix(loss=loss.item(), acc=acc)
 
             test_loop = tqdm(test_loader, total=len(test_loader))
@@ -72,7 +72,7 @@ if __name__ == '__main__':
                 accuracy.append(val_acc)
                 flag += 1
 
-                test_loop.set_description(f'   Test   ')
+                test_loop.set_description(f'               Test ')
                 test_loop.set_postfix(loss=val_loss.item(), acc=val_acc)
                 # print('test step:{}/{} loss={:.5f} acc={:.3f}'.format(step, int(test_size / batch_size), val_loss,
                 #                                                       val_acc))

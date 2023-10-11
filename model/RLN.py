@@ -5,6 +5,7 @@ import numpy as np
 from torch import nn
 from model import ffe
 from model import tfe
+from model import weight
 
 
 class RLN(nn.Module):
@@ -12,6 +13,7 @@ class RLN(nn.Module):
         super().__init__()
         self.channel = channel
         self.batch_size = batch_size
+        self.weight = weight.Weight(channel=channel)
         self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=8, dropout=0.5)
         self.ffe = ffe.FFE()
         self.lstm = tfe.LSTM(input_size=16, hidden_size=64, dropout=0.5)
@@ -22,12 +24,14 @@ class RLN(nn.Module):
             nn.LeakyReLU()
         )
 
-    def forward(self, x):
+    def forward(self, x):  # x:[b, c, t]
         x1 = np.zeros((self.batch_size, 16, 1), dtype=np.float32)
         x1 = torch.from_numpy(x1).cuda()
         x2 = x1
 
-        one_dim_tensors = torch.chunk(x, self.channel, dim=1)
+        x = self.weight(x)
+
+        one_dim_tensors = torch.chunk(x, self.channel, dim=1)  # [b, 1, t]
 
         for i in range(self.channel):
             tmp = torch.transpose(one_dim_tensors[i], dim0=1, dim1=2)
