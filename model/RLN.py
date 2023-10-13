@@ -24,7 +24,7 @@ class RLN(nn.Module):
             nn.LeakyReLU()
         )
 
-    def forward(self, x):  # x:[b, c, t]
+    def forward(self, x):  # [b, c, t]
         x1 = np.zeros((self.batch_size, 16, 1), dtype=np.float32)
         x1 = torch.from_numpy(x1).cuda()
         x2 = x1
