@@ -12,7 +12,7 @@ class RLN(nn.Module):
         self.channel = channel
         self.batch_size = batch_size
         self.weight = weight.Weight(channel=channel)
-        self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=8, dropout=0.5)
+        self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=16, dropout=0.5)
         self.ffe = ffe.FFE(num_class=num_class)
         self.lstm = tfe.LSTM(input_size=16, hidden_size=64, dropout=0.5)
         self.out = nn.Sequential(

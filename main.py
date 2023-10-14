@@ -6,7 +6,7 @@ from model.utils import train, test
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
-epochs = 1
+epochs = 25
 batch_size = 64
 # num_class = 6
 num_class = 72
@@ -43,6 +43,7 @@ if __name__ == '__main__':
         # 设置网络参数
         optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-8)
 
+        epoch_acc = max_acc = 0
         for epoch in range(epochs):
             losses = []
             accuracy = []
@@ -66,7 +67,6 @@ if __name__ == '__main__':
 
             test_loop = tqdm(test_loader, total=len(test_loader))
             sum_acc, flag = 0, 0
-            max_acc = 0
             for (xx, yy) in test_loop:
                 if batch_size == 64 and flag == 8:  # 跳过第81个step的原因是kfold分配的验证集在batich_size=64时，
                     continue  # 第81个step无法填满，导致除以精度异常甚至报错
@@ -83,8 +83,8 @@ if __name__ == '__main__':
                 #                                                       val_acc))
             epoch_acc = sum_acc / flag
             print('本轮epoch平均准确率：{}'.format(epoch_acc))
-            if epoch_acc > max_acc:
-                history[i] = epoch_acc
+        if epoch_acc > max_acc:
+            max_acc = history[i] = epoch_acc
         print('受试者{}训练完成，测试准确率：{}'.format(i+1, history[i]))
         print('---------------------------------------------------------')
     print(history)
