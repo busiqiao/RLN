@@ -1,5 +1,3 @@
-import math
-
 import torch
 import numpy as np
 from torch import nn
@@ -15,13 +13,13 @@ class RLN(nn.Module):
         self.batch_size = batch_size
         self.weight = weight.Weight(channel=channel)
         self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=8, dropout=0.5)
-        self.ffe = ffe.FFE()
+        self.ffe = ffe.FFE(num_class=num_class)
         self.lstm = tfe.LSTM(input_size=16, hidden_size=64, dropout=0.5)
         self.out = nn.Sequential(
             nn.Linear(in_features=248, out_features=600),
-            nn.LeakyReLU(),
+            nn.LeakyReLU() if num_class == 6 else nn.ELU(),
             nn.Linear(in_features=600, out_features=num_class),
-            nn.LeakyReLU()
+            nn.LeakyReLU() if num_class == 6 else nn.ELU()
         )
 
     def forward(self, x):  # [b, c, t]

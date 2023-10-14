@@ -6,7 +6,7 @@ import torch
 class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, dropout, bias=False):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout, bias=bias,
+        self.lstm = nn.LSTM(input_size=input_size, num_layers=1, hidden_size=hidden_size, dropout=dropout, bias=bias,
                             batch_first=True)
 
     def forward(self, x):
