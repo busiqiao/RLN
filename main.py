@@ -7,9 +7,10 @@ from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
 epochs = 35
+# epochs = 25
 batch_size = 64
-# num_class = 6
-num_class = 72
+num_class = 6
+# num_class = 72
 
 torch.manual_seed(0)
 history = np.zeros(10)
@@ -80,8 +81,6 @@ if __name__ == '__main__':
 
                 test_loop.set_description(f'               Test ')
                 test_loop.set_postfix(loss=val_loss.item(), acc=val_acc)
-                # print('test step:{}/{} loss={:.5f} acc={:.3f}'.format(step, int(test_size / batch_size), val_loss,
-                #                                                       val_acc))
             epoch_acc = sum_acc / flag
             print('本轮epoch平均准确率：{}'.format(epoch_acc))
             if epoch_acc > max_acc:
