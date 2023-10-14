@@ -6,12 +6,15 @@ import torch
 class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, dropout, bias=False):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=input_size, num_layers=1, hidden_size=hidden_size, dropout=dropout, bias=bias,
+        self.lstm = nn.LSTM(input_size=input_size, num_layers=1, hidden_size=hidden_size, bias=bias,
                             batch_first=True)
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = self.lstm(x)
-        return x
+        x, (h_n, _) = self.lstm(x)
+        # x1 = x[:, -1, :]
+        h_n = self.dropout(h_n[-1, :, :]).unsqueeze(0)
+        return x, h_n
 
 
 class MHA(nn.Module):
@@ -29,15 +32,15 @@ class MHA(nn.Module):
 class TFE(nn.Module):
     def __init__(self, input_size, hidden_size, num_heads, dropout=0.5):
         super().__init__()
-        self.lstm = LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout)
+        self.lstm_with_dropout = LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout)
         self.mha = MHA(embed_dim=1, num_heads=num_heads)
 
     def forward(self, x):
-        x, (h_0, c_0) = self.lstm(x)
-        h_0 = h_0.permute(1, 0, 2)
-        h_0 = h_0[:, -1, :].unsqueeze(1)
-        h_0 = h_0.permute(0, 2, 1)
-        x = self.mha(h_0)
+        _, h_n = self.lstm_with_dropout(x)
+        h_n = h_n.permute(1, 0, 2)
+        h_n = h_n[:, -1, :].unsqueeze(1)
+        h_n = h_n.permute(0, 2, 1)
+        x = self.mha(h_n)
         return x
 
 

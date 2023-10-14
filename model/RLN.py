@@ -45,7 +45,7 @@ class RLN(nn.Module):
 
         x = torch.cat((x1, x2), dim=2)
 
-        x, (h_0, c_0) = self.lstm(x)
+        x, h_0 = self.lstm(x)
         x = torch.reshape(x, (self.batch_size, -1))
         x = self.out(x)
         return x

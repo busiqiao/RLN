@@ -6,7 +6,7 @@ from model.utils import train, test
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
-epochs = 25
+epochs = 35
 batch_size = 64
 # num_class = 6
 num_class = 72
