@@ -12,7 +12,7 @@ batch_size = 64
 num_class = 6
 # num_class = 72
 
-torch.manual_seed(0)
+torch.manual_seed(1)
 history = np.zeros(10)
 
 if __name__ == '__main__':
