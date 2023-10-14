@@ -14,6 +14,7 @@ class LSTM(nn.Module):
         x, (h_n, _) = self.lstm(x)
         # x1 = x[:, -1, :]
         h_n = self.dropout(h_n[-1, :, :]).unsqueeze(0)
+        x = self.dropout(x)
         return x, h_n
 
 
