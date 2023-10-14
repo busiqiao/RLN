@@ -12,7 +12,7 @@ class RLN(nn.Module):
         self.channel = channel
         self.batch_size = batch_size
         self.weight = weight.Weight(channel=channel)
-        self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=16, dropout=0.5)
+        self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=1, dropout=0.5)
         self.ffe = ffe.FFE(num_class=num_class)
         self.lstm = tfe.LSTM(input_size=16, hidden_size=64, dropout=0.5)
         self.out = nn.Sequential(
@@ -34,7 +34,7 @@ class RLN(nn.Module):
         for i in range(self.channel):
             tmp = torch.transpose(one_dim_tensors[i], dim0=1, dim1=2)
             tmp = self.tfe(tmp)
-            tmp = torch.transpose(tmp, dim0=1, dim1=2)
+            # tmp = torch.transpose(tmp, dim0=1, dim1=2)
             x1 = torch.cat((x1, tmp), dim=2)
 
             tmp = self.ffe(one_dim_tensors[i])
@@ -48,5 +48,6 @@ class RLN(nn.Module):
         x = torch.transpose(x, dim0=1, dim1=2)
         x, (h_0, c_0) = self.lstm(x)
         x = torch.transpose(x, dim0=1, dim1=2)
+        # x = x[:, -1, :]
         x = self.out(x[:, -1, :])
         return x
