@@ -14,9 +14,9 @@ class RLN(nn.Module):
         self.weight = weight.Weight(channel=channel)
         self.tfe = tfe.TFE(input_size=1, hidden_size=16, num_heads=1, dropout=0.5)
         self.ffe = ffe.FFE(num_class=num_class)
-        self.lstm = tfe.LSTM(input_size=16, hidden_size=64, dropout=0.5)
+        self.lstm = tfe.LSTM(input_size=248, hidden_size=64, dropout=0.5)
         self.out = nn.Sequential(
-            nn.Linear(in_features=248, out_features=600),
+            nn.Linear(in_features=16*64, out_features=600),
             nn.LeakyReLU() if num_class == 6 else nn.ELU(),
             nn.Linear(in_features=600, out_features=num_class),
             nn.LeakyReLU() if num_class == 6 else nn.ELU()
@@ -45,9 +45,7 @@ class RLN(nn.Module):
 
         x = torch.cat((x1, x2), dim=2)
 
-        x = torch.transpose(x, dim0=1, dim1=2)
         x, (h_0, c_0) = self.lstm(x)
-        x = torch.transpose(x, dim0=1, dim1=2)
-        # x = x[:, -1, :]
-        x = self.out(x[:, -1, :])
+        x = torch.reshape(x, (self.batch_size, -1))
+        x = self.out(x)
         return x
