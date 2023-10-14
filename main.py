@@ -83,8 +83,8 @@ if __name__ == '__main__':
                 #                                                       val_acc))
             epoch_acc = sum_acc / flag
             print('本轮epoch平均准确率：{}'.format(epoch_acc))
-        if epoch_acc > max_acc:
-            max_acc = history[i] = epoch_acc
+            if epoch_acc > max_acc:
+                max_acc = history[i] = epoch_acc
         print('受试者{}训练完成，测试准确率：{}'.format(i+1, history[i]))
         print('---------------------------------------------------------')
     print(history)
