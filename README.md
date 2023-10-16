@@ -6,4 +6,4 @@
 ## 环境配置
 该仓库的复现未完全按照论文中所描述的环境配置，在此给出的配置仅供参考。
 
-完整的conda环境配置在requirements.txt中。
+完整的conda环境配置在requirements.yaml中。
