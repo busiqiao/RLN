@@ -6,7 +6,7 @@ import torch
 class LSTM(nn.Module):
     def __init__(self, input_size, hidden_size, dropout, bias=False):
         super().__init__()
-        self.lstm = nn.LSTM(input_size=input_size, num_layers=2, hidden_size=hidden_size, bias=bias,
+        self.lstm = nn.LSTM(input_size=input_size, num_layers=1, hidden_size=hidden_size, bias=bias,
                             batch_first=True)
         self.dropout = nn.Dropout(dropout)
 
@@ -34,13 +34,13 @@ class TFE(nn.Module):
     def __init__(self, input_size, hidden_size, num_heads, dropout=0.5):
         super().__init__()
         self.lstm_with_dropout = LSTM(input_size=input_size, hidden_size=hidden_size, dropout=dropout)
-        self.mha = MHA(embed_dim=16, num_heads=num_heads)
+        self.mha = MHA(embed_dim=1, num_heads=num_heads)
 
     def forward(self, x):
         _, h_n = self.lstm_with_dropout(x)
         h_n = h_n.permute(1, 0, 2)
         h_n = h_n[:, -1, :].unsqueeze(1)
-        # h_n = h_n.permute(0, 2, 1)
+        h_n = h_n.permute(0, 2, 1)
         x = self.mha(h_n)
         return x
 

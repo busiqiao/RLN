@@ -34,7 +34,6 @@ class RLN(nn.Module):
         for i in range(self.channel):
             tmp = torch.transpose(one_dim_tensors[i], dim0=1, dim1=2)
             tmp = self.tfe(tmp)
-            tmp = torch.transpose(tmp, dim0=1, dim1=2)
             x1 = torch.cat((x1, tmp), dim=2)
 
             tmp = self.ffe(one_dim_tensors[i])

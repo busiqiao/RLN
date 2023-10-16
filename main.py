@@ -6,13 +6,13 @@ from model.utils import train, test
 from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
-epochs = 35
-# epochs = 25
+# epochs = 35
+epochs = 25
 batch_size = 64
-num_class = 6
-# num_class = 72
+# num_class = 6
+num_class = 72
 
-torch.manual_seed(1)
+torch.manual_seed(3401)
 history = np.zeros(10)
 
 if __name__ == '__main__':
